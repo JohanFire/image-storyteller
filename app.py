@@ -7,7 +7,6 @@ import streamlit as st
 
 HUGGINGFACE_HUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
-# img2text
 def img2text(url):
     imageToText = pipeline('image-to-text', model="Salesforce/blip-image-captioning-base")
 
@@ -16,7 +15,6 @@ def img2text(url):
 
     return text
 
-# LLM
 def generate_story(scenario):
     template = """
     You are a story teller;
@@ -25,7 +23,6 @@ def generate_story(scenario):
     CONTEXT: {scenario}
     STORY:
     """
-
     prompt = PromptTemplate(template=template, input_variables=["scenario"])
 
     story_llm = LLMChain(llm=OpenAI(
@@ -37,8 +34,6 @@ def generate_story(scenario):
 
     return story
 
-
-# text to speech
 def text2speech(message):
     API_URL = "https://api-inference.huggingface.co/models/espnet/kan-bayashi_ljspeech_vits"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_HUB_API_TOKEN}"}
@@ -53,7 +48,6 @@ def text2speech(message):
 
 def main():
     load_dotenv(find_dotenv())
-
 
     st.set_page_config(page_title="Image StoryTeller", page_icon="🤖")
     st.header("AI Image StoryTeller")
@@ -79,7 +73,6 @@ def main():
             st.write(story)
 
         st.audio("audio.flac")
-
 
 if __name__ == "__main__":
     main()
