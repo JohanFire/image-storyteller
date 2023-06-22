@@ -3,6 +3,9 @@ from transformers import pipeline
 from langchain import PromptTemplate, LLMChain, OpenAI
 import requests
 import os
+import streamlit as st
+
+HUGGINGFACE_HUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 # img2text
 def img2text(url):
@@ -48,10 +51,35 @@ def text2speech(message):
         file.write(response.content)
     # return response.json()
 
+def main():
+    load_dotenv(find_dotenv())
 
-load_dotenv(find_dotenv())
-HUGGINGFACE_HUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
-scenario =  img2text("photo_01.png")
-story = generate_story(scenario)
-text2speech(story)
+    st.set_page_config(page_title="Image StoryTeller", page_icon="🤖")
+    st.header("AI Image StoryTeller")
+    st.write("AI tool developed by: [www.johanfire.com](https://www.johanfire.com/)")
+    uploadedFile = st.file_uploader("Choose an image:", type="png")
+
+    if uploadedFile is not None:
+        print(uploadedFile)
+        bytesData = uploadedFile.getvalue()
+
+        with open(uploadedFile.name, "wb") as file:
+            file.write(bytesData)
+
+        st.image(uploadedFile, caption="Uploaded Image", use_column_width=True)
+
+        scenario = img2text(uploadedFile.name)
+        story = generate_story(scenario)
+        text2speech(story)
+
+        with st.expander("scenario"):
+            st.write(scenario)
+        with st.expander("story"):
+            st.write(story)
+
+        st.audio("audio.flac")
+
+
+if __name__ == "__main__":
+    main()
