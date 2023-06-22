@@ -1,6 +1,8 @@
 from dotenv import find_dotenv, load_dotenv
 from transformers import pipeline
 from langchain import PromptTemplate, LLMChain, OpenAI
+import requests
+import os
 
 # img2text
 def img2text(url):
@@ -34,10 +36,22 @@ def generate_story(scenario):
 
 
 # text to speech
+def text2speech(message):
+    API_URL = "https://api-inference.huggingface.co/models/espnet/kan-bayashi_ljspeech_vits"
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_HUB_API_TOKEN}"}
+    payload = {
+	"inputs": message,
+    }
 
+    response = requests.post(API_URL, headers=headers, json=payload)
+    with open('audio.flac', 'wb') as file:
+        file.write(response.content)
+    # return response.json()
 
 
 load_dotenv(find_dotenv())
+HUGGINGFACE_HUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
-# img2text("photo_01.png")
-
+scenario =  img2text("photo_01.png")
+story = generate_story(scenario)
+text2speech(story)
